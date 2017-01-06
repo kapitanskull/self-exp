@@ -55,27 +55,7 @@ class Expenses_m extends CI_Model
 		return $rs;
 	}
 	
-	function verify(){
-		$email = trim($this->input->post('email'));
-		$password = md5(trim($this->input->post('password')));
-		
-		if(isset($email) AND $email != '' AND isset($password) AND $password != ''){
-			$sql = "SELECT * FROM users where user_email = " . $this->db->escape($email) . "AND user_password = " . $this->db->escape($password) . "LIMIT 1";
-			$query = $this->db->query($sql);
-		
-			if($query->num_rows() > 0){
-				return $query->row();
-			}
-			else{
-				$this->set_message("mesej", "Invalid email and password");
-				return false;
-			}
-		}
-		else{
-			$this->set_message("mesej", "Enter email and password");
-			return false;
-		}
-	}
+	
 	
 	function set_message($status,$mesej){
 		$this->session->set_flashdata($status,$mesej);

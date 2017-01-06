@@ -7,8 +7,8 @@ class Income_m extends CI_Model
 	}
 	
 	function listing(){
-		$userid = $this->input->post('id');
-		$query = $this->db->query("SELECT * FROM income WHERE user_id=" . $this->db->escape($userid));
+		$user_id = $this->input->post('user_id');
+		$query = $this->db->query("SELECT * FROM income WHERE user_id=" . $this->db->escape($user_id));
 		
 		if($query->num_rows()> 0 ){
 			return $query;
@@ -16,57 +16,67 @@ class Income_m extends CI_Model
 		else{
 			return false;
 		}
-		
 	}	
-	/* function add(){
-		 $DBdata = array(
-			'user_name' => trim($this->input->post('name')),
-			'user_email' => trim($this->input->post('email')),
+	
+	function income_add(){
+		$todaytdate = date("Y-m-d");
+		
+		$DBdata = array(
+			'user_id' => trim($this->input->post('user_id')),
+			'income_category' => trim($this->input->post('income_category')),
+			'income_image' => trim($this->input->post('income_image')),
+			'income_amount' => trim($this->input->post('income_amount')),
+			'income_date' => trim($this->input->post('income_date'))
 		);
 		
-		if($DBdata['user_name'] == ''){
-			$this->set_message("mesej", "Please enter your name");
+		if($DBdata['user_id'] == ''){
+			$this->set_message("mesej", "Require user id");
 			return false;
 		}
 		
-		if($DBdata['user_email'] == ''){
-			$this->set_message("mesej", "Please enter your email");
+		if($DBdata['income_category'] == ''){
+			$this->set_message("mesej", "Please enter income category");
 			return false;
 		}
 		
-		if($DBdata['user_email'] != ''){
-			if (!filter_var($DBdata['user_email'], FILTER_VALIDATE_EMAIL)) {
-				$this->set_message("mesej", "Invalid email format");
-				return false;
-			}
-			
-			$sql = "SELECT * FROM users WHERE user_email = " . $this->db->escape($DBdata['user_email']);			
-		    $query = $this->db->query($sql);
-			if($query->num_rows() > 0) {
-				$this->set_message("mesej", "This email already been registered");
-				return false;
-			}
+		if($DBdata['income_amount'] == ''){
+			$this->set_message("mesej", "Please enter income amount");
+			return false;
+		}
+		if(!is_numeric($DBdata['income_amount'])) {
+			$this->set_message("mesej", "Income amount contain number only");
+			return false;
+		}
+		if($DBdata['income_amount']!= '' AND is_numeric($DBdata['income_amount'])){
+			$DBdata['income_amount']  = number_format($DBdata['income_amount'],2);
 		}
 		
-		if($this->input->post('password') == ''){
-			$this->set_message("mesej", "Please enter your password");
+		if($DBdata['income_date'] == ''){
+			$this->set_message("mesej", "Please enter income amount");
 			return false;
 		}
 		
-		if($this->input->post('password') != '') {
-	    	if(md5(trim($this->input->post('rpassword'))) != md5(trim($this->input->post('password')))) {
-				$this->set_message("mesej", "Re-type Password does not match. Please try again.");
-	    		return false;
-	    	}
-	    	$DBdata['user_password'] = md5(trim($this->input->post('password')));
-    	}
-		
-		$rs = $this->db->insert('users', $DBdata);
+		$rs = $this->db->insert('income', $DBdata);
 		$insert_id = $this->db->insert_id();
 		$this->set_message("mesej", "Successfully register");
 		return $rs;
+		
 	}
-	 */
+	
+	function total_income(){
+		$user_id = $this->input->post('user_id');
+		// $user_id = 2;
+		$sql = "SELECT * FROM income WHERE user_id = " .  $this->db->escape($user_id);
+		$query = $this->db->query($sql);
+		
+		if($query->num_rows() > 0){
+			return $query;
+		}
+		else{
+			return false;
+		}
+	}
+	
 	function set_message($status,$mesej){
 		$this->session->set_flashdata($status,$mesej);
 	}

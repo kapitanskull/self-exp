@@ -6,57 +6,80 @@ class Expenses_m extends CI_Model
 		parent::_construct();// Call the Model constructor
 	}
 		
-	function add(){
-		 $DBdata = array(
-			'user_name' => trim($this->input->post('name')),
-			'user_email' => trim($this->input->post('email')),
+	function listing(){
+		$user_id = $this->input->post('user_id');
+		$query = $this->db->query("SELECT * FROM expenses WHERE user_id=" . $this->db->escape($user_id));
+		
+		if($query->num_rows()> 0 ){
+			return $query;
+		}
+		else{
+			return false;
+		}
+	}	
+	
+	function expenses_add(){
+		$todaytdate = date("Y-m-d");
+		
+		$DBdata = array(
+			'user_id' => trim($this->input->post('user_id')),
+			'expenses_category' => trim($this->input->post('expenses_category')),
+			'expenses_image' => trim($this->input->post('expenses_image')),
+			'expenses_amount' => trim($this->input->post('expenses_amount')),
+			'expenses_date' => trim($this->input->post('expenses_date'))
 		);
 		
-		if($DBdata['user_name'] == ''){
-			$this->set_message("mesej", "Please enter your name");
+		if($DBdata['user_id'] == ''){
+			$this->set_message("mesej", "Require user id");
 			return false;
 		}
 		
-		if($DBdata['user_email'] == ''){
-			$this->set_message("mesej", "Please enter your email");
+		if($DBdata['expenses_category'] == ''){
+			$this->set_message("mesej", "Please enter expenses category");
 			return false;
 		}
 		
-		if($DBdata['user_email'] != ''){
-			if (!filter_var($DBdata['user_email'], FILTER_VALIDATE_EMAIL)) {
-				$this->set_message("mesej", "Invalid email format");
-				return false;
-			}
-			
-			$sql = "SELECT * FROM users WHERE user_email = " . $this->db->escape($DBdata['user_email']);			
-		    $query = $this->db->query($sql);
-			if($query->num_rows() > 0) {
-				$this->set_message("mesej", "This email already been registered");
-				return false;
-			}
+		if($DBdata['expenses_amount'] == ''){
+			$this->set_message("mesej", "Please enter expenses amount");
+			return false;
+		}
+		if(!is_numeric($DBdata['expenses_amount'])) {
+			$this->set_message("mesej", "expenses amount contain number only");
+			return false;
+		}
+		if($DBdata['expenses_amount']!= '' AND is_numeric($DBdata['expenses_amount'])){
+			$DBdata['expenses_amount']  = number_format($DBdata['expenses_amount'],2);
 		}
 		
-		if($this->input->post('password') == ''){
-			$this->set_message("mesej", "Please enter your password");
+		if($DBdata['expenses_date'] == ''){
+			$this->set_message("mesej", "Please enter expenses amount");
 			return false;
 		}
 		
-		if($this->input->post('password') != '') {
-	    	if(md5(trim($this->input->post('rpassword'))) != md5(trim($this->input->post('password')))) {
-				$this->set_message("mesej", "Re-type Password does not match. Please try again.");
-	    		return false;
-	    	}
-	    	$DBdata['user_password'] = md5(trim($this->input->post('password')));
-    	}
-		
-		$rs = $this->db->insert('users', $DBdata);
+		$rs = $this->db->insert('expenses', $DBdata);
 		$insert_id = $this->db->insert_id();
 		$this->set_message("mesej", "Successfully register");
 		return $rs;
+		
 	}
 	
-	
-	
+	function total_expenses(){
+		$user_id = $this->input->post('user_id');
+		if($user_id > 0){
+			$sql = "SELECT * FROM expenses WHERE user_id = " .  $this->db->escape($user_id);
+			$query = $this->db->query($sql);
+			
+			if($query->num_rows() > 0){
+				return $query;
+			}
+			else{
+				return false;
+			}
+		}
+		else
+			return false;
+	}	
+
 	function set_message($status,$mesej){
 		$this->session->set_flashdata($status,$mesej);
 	}

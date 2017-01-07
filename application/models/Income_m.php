@@ -65,16 +65,19 @@ class Income_m extends CI_Model
 	
 	function total_income(){
 		$user_id = $this->input->post('user_id');
-		// $user_id = 2;
-		$sql = "SELECT * FROM income WHERE user_id = " .  $this->db->escape($user_id);
-		$query = $this->db->query($sql);
-		
-		if($query->num_rows() > 0){
-			return $query;
+		if($user_id > 0){
+			$sql = "SELECT * FROM income WHERE user_id = " .  $this->db->escape($user_id);
+			$query = $this->db->query($sql);
+			
+			if($query->num_rows() > 0){
+				return $query;
+			}
+			else{
+				return false;
+			}
 		}
-		else{
+		else
 			return false;
-		}
 	}
 	
 	function set_message($status,$mesej){

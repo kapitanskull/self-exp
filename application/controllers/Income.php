@@ -24,14 +24,6 @@ class Income extends CI_Controller {
 		<input type='submit' value='Submit'>		
 		</form>";
 		
-		echo "<br />";
-			echo "<form action='login' method='post'>
-		id:<br>
-		<input type='text' name='email' placeholder='email'>
-		<input type='text' name='password' placeholder='password'>
-		<input type='submit' value='Submit'>		
-		</form>";
-		
 			echo "<br />";
 			echo "<form action='listing' method='post'>
 		id for listing income:<br>
@@ -104,7 +96,7 @@ class Income extends CI_Controller {
 				
 			$rs = $this->income_m->total_income();
 			
-			if($rs !== false){
+			if($rs !== false AND $rs->result() > 0){
 				foreach($rs->result() as $row){
 					$month = date("m", strtotime($row->income_date));
 					$year = date("Y", strtotime($row->income_date));
